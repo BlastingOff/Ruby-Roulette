@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Probability Carnival Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="booth-container">
+        <h1>🎡 Probability Palace</h1>
+        <div id="wheel-result">?</div>
+        
+        <div class="ui-section">
+            <p><strong>Step 1: Choose Bet Type</strong></p>
+            <select id="bet-category">
+                <option value="color">Bet on Color</option>
+                <option value="number">Bet on Number</option>
+            </select>
+
+            <p><strong>Step 2: Pick Your Target</strong></p>
+            <select id="color-choice">
+                <option value="Red">Red (Odds)</option>
+                <option value="Black">Black (Evens)</option>
+                <option value="Green">Green (Number 6)</option>
+            </select>
+
+            <select id="number-choice" class="hidden">
+                <option value="1">1</option><option value="2">2</option>
+                <option value="3">3</option><option value="4">4</option>
+                <option value="5">5</option><option value="6">6</option>
+                <option value="7">7</option><option value="8">8</option>
+                <option value="9">9</option><option value="10">10</option>
+                <option value="11">11</option><option value="12">12</option>
+            </select>
+
+            <button id="spin-btn" onclick="playGame()">SPIN FOR PRIZE</button>
+        </div>
+
+        <div id="voucher-box" class="hidden">
+            <hr>
+            <div id="verification-code">----</div>
+            <p class="small-text">Game locked. See Game Master.</p>
+        </div>
+
+        <div class="master-box">
+            <input type="text" id="master-input" placeholder="Master Control..." onkeyup="checkMaster(event)">
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
