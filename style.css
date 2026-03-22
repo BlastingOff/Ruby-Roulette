@@ -1,73 +1,114 @@
 body {
-    background-color: #1a472a;
+    background-color: #0a0a0a;
     color: white;
-    font-family: 'Arial', sans-serif;
+    font-family: 'Arial Black', sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
+    overflow: hidden;
+}
+
+#sparkle-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 999;
 }
 
 .booth-container {
-    background: #c0392b;
-    padding: 25px;
-    border-radius: 25px;
-    border: 8px solid #f1c40f;
+    background: #4d0000;
+    padding: 30px;
+    border-radius: 30px;
+    border: 6px solid #d4af37;
     text-align: center;
-    width: 350px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+    width: 340px;
+    box-shadow: 0 0 50px rgba(255, 0, 0, 0.4);
+    position: relative;
+    z-index: 10;
+}
+
+/* CLEAN METALLIC TEXT - NO GLOW */
+.ruby-title {
+    font-size: 36px;
+    margin: 0 0 10px 0;
+    text-transform: uppercase;
+    background: linear-gradient(to bottom, #ff4d4d, #b22222, #660000);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    /* Glow and animation removed */
 }
 
 #wheel-result {
-    width: 100px;
-    height: 100px;
-    line-height: 100px;
-    background: #fff;
-    color: #333;
+    width: 120px;
+    height: 120px;
+    line-height: 120px;
+    background: white;
+    color: #222;
     border-radius: 50%;
-    font-size: 45px;
-    font-weight: bold;
+    font-size: 55px;
     margin: 15px auto;
-    border: 4px solid #333;
+    border: 5px solid #d4af37;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.gem-ruby {
+    background: radial-gradient(circle at 30% 30%, #ff4d4d, #990000) !important;
+    color: white !important;
+    box-shadow: 0 0 30px #ff0000, inset 0 0 15px rgba(255,255,255,0.4) !important;
+}
+
+.gem-onyx {
+    background: radial-gradient(circle at 30% 30%, #444, #000) !important;
+    color: white !important;
+    box-shadow: 0 0 30px #000, inset 0 0 15px rgba(255,255,255,0.2) !important;
+}
+
+.gem-emerald {
+    background: radial-gradient(circle at 30% 30%, #2ecc71, #145a32) !important;
+    color: white !important;
+    box-shadow: 0 0 40px #2ecc71, inset 0 0 15px rgba(255,255,255,0.5) !important;
 }
 
 select, button {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     margin-bottom: 10px;
-    border-radius: 5px;
+    border-radius: 8px;
     border: none;
+    font-weight: bold;
 }
 
 button {
     background: #27ae60;
     color: white;
-    font-weight: bold;
     cursor: pointer;
     font-size: 18px;
 }
 
-button:disabled { background: #7f8c8d; }
+button:disabled { background: #555; }
 
 #verification-code {
     background: #000;
-    color: #f1c40f;
-    padding: 10px;
-    font-size: 22px;
-    font-family: monospace;
+    color: #d4af37;
+    padding: 15px;
+    font-size: 24px;
+    border: 2px dashed #d4af37;
 }
 
-.master-box { margin-top: 20px; }
+.master-box { margin-top: 15px; opacity: 0.1; }
 #master-input {
-    background: none;
-    border: 1px solid rgba(255,255,255,0.2);
-    color: rgba(255,255,255,0.5);
-    font-size: 10px;
-    width: 80%;
-    padding: 5px;
-    border-radius: 4px;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 8px;
+    width: 40px;
+    text-align: center;
 }
 
 .hidden { display: none; }
-.small-text { font-size: 11px; opacity: 0.8; }
+.small-text { font-size: 11px; opacity: 0.7; }

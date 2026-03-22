@@ -3,13 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Probability Carnival Game</title>
+    <title>Ruby Roulette - Carnival Game</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <canvas id="sparkle-canvas"></canvas>
 
     <div class="booth-container">
-        <h1>🎡 Probability Palace</h1>
+        <h1 class="ruby-title">Ruby Roulette</h1>
+        
         <div id="wheel-result">?</div>
         
         <div class="ui-section">
@@ -21,9 +23,9 @@
 
             <p><strong>Step 2: Pick Your Target</strong></p>
             <select id="color-choice">
-                <option value="Red">Red (Odds)</option>
-                <option value="Black">Black (Evens)</option>
-                <option value="Green">Green (Number 6)</option>
+                <option value="Red">Ruby Red (Odds)</option>
+                <option value="Black">Onyx Black (Evens)</option>
+                <option value="Green">Emerald Green (6)</option>
             </select>
 
             <select id="number-choice" class="hidden">
@@ -35,17 +37,17 @@
                 <option value="11">11</option><option value="12">12</option>
             </select>
 
-            <button id="spin-btn" onclick="playGame()">SPIN FOR PRIZE</button>
+            <button id="spin-btn" onclick="playGame()">SPIN THE WHEEL</button>
         </div>
 
         <div id="voucher-box" class="hidden">
             <hr>
             <div id="verification-code">----</div>
-            <p class="small-text">Game locked. See Game Master.</p>
+            <p class="small-text">Wheel Spun. See Game Master.</p>
         </div>
 
         <div class="master-box">
-            <input type="text" id="master-input" placeholder="Master Control..." onkeyup="checkMaster(event)">
+            <input type="text" id="master-input" placeholder="..." onkeyup="checkMaster(event)">
         </div>
     </div>
 
