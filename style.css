@@ -8,6 +8,7 @@ body {
     height: 100vh;
     margin: 0;
     overflow: hidden;
+    touch-action: manipulation;
 }
 
 #sparkle-canvas {
@@ -26,89 +27,67 @@ body {
     border-radius: 30px;
     border: 6px solid #d4af37;
     text-align: center;
-    width: 340px;
+    width: 350px;
     box-shadow: 0 0 50px rgba(255, 0, 0, 0.4);
     position: relative;
     z-index: 10;
 }
 
-/* CLEAN METALLIC TEXT - NO GLOW */
 .ruby-title {
-    font-size: 36px;
+    font-size: 34px;
     margin: 0 0 10px 0;
     text-transform: uppercase;
     background: linear-gradient(to bottom, #ff4d4d, #b22222, #660000);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    /* Glow and animation removed */
 }
 
 #wheel-result {
-    width: 120px;
-    height: 120px;
-    line-height: 120px;
+    width: 130px;
+    height: 130px;
+    line-height: 130px;
     background: white;
     color: #222;
     border-radius: 50%;
-    font-size: 55px;
+    font-size: 60px;
     margin: 15px auto;
-    border: 5px solid #d4af37;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 6px solid #d4af37;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.1s;
 }
 
-.gem-ruby {
-    background: radial-gradient(circle at 30% 30%, #ff4d4d, #990000) !important;
-    color: white !important;
-    box-shadow: 0 0 30px #ff0000, inset 0 0 15px rgba(255,255,255,0.4) !important;
-}
+/* Gemstone Visuals */
+.gem-ruby { background: radial-gradient(circle at 30% 30%, #ff4d4d, #990000) !important; color: white !important; box-shadow: 0 0 30px #ff0000, inset 0 0 15px rgba(255,255,255,0.4) !important; }
+.gem-onyx { background: radial-gradient(circle at 30% 30%, #444, #000) !important; color: white !important; box-shadow: 0 0 30px #000, inset 0 0 15px rgba(255,255,255,0.2) !important; }
+.gem-emerald { background: radial-gradient(circle at 30% 30%, #2ecc71, #145a32) !important; color: white !important; box-shadow: 0 0 40px #2ecc71, inset 0 0 15px rgba(255,255,255,0.5) !important; }
 
-.gem-onyx {
-    background: radial-gradient(circle at 30% 30%, #444, #000) !important;
-    color: white !important;
-    box-shadow: 0 0 30px #000, inset 0 0 15px rgba(255,255,255,0.2) !important;
+@keyframes tick-bump {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
 }
+.tick-effect { animation: tick-bump 0.1s ease-out; }
 
-.gem-emerald {
-    background: radial-gradient(circle at 30% 30%, #2ecc71, #145a32) !important;
-    color: white !important;
-    box-shadow: 0 0 40px #2ecc71, inset 0 0 15px rgba(255,255,255,0.5) !important;
-}
+/* Odds Chart and Locked Text */
+.odds-legend { background: #000; border: 2px solid #d4af37; border-radius: 12px; padding: 12px; margin: 15px 0; }
+.odds-legend table { width: 100%; border-collapse: collapse; font-size: 13px; color: #fff; text-align: left; }
+.odds-legend th { color: #d4af37; border-bottom: 1px solid #d4af37; padding-bottom: 4px; }
+.ruby-row td:first-child { color: #ff4d4d; }
+.onyx-row td:first-child { color: #aaaaaa; }
+.emerald-row td:first-child { color: #2ecc71; }
 
-select, button {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 10px;
-    border-radius: 8px;
-    border: none;
-    font-weight: bold;
-}
+.locked-text { color: #d4af37; font-size: 26px; letter-spacing: 3px; margin: 15px 0; animation: pulse-glow 0.8s ease-in-out infinite alternate; }
+@keyframes pulse-glow { from { opacity: 0.5; } to { opacity: 1; text-shadow: 0 0 15px #d4af37; } }
 
-button {
-    background: #27ae60;
-    color: white;
-    cursor: pointer;
-    font-size: 18px;
-}
-
+select, button { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: none; font-weight: bold; font-family: inherit; }
+button { background: #27ae60; color: white; cursor: pointer; font-size: 18px; }
 button:disabled { background: #555; }
 
-#verification-code {
-    background: #000;
-    color: #d4af37;
-    padding: 15px;
-    font-size: 24px;
-    border: 2px dashed #d4af37;
-}
-
-.master-box { margin-top: 15px; opacity: 0.1; }
-#master-input {
-    background: transparent;
-    border: none;
-    color: white;
-    font-size: 8px;
-    width: 40px;
-    text-align: center;
-}
-
+#verification-code { background: #000; color: #d4af37; padding: 12px; font-size: 22px; border: 2px dashed #d4af37; font-family: monospace; }
+.master-box { margin-top: 10px; opacity: 0.05; }
+#master-input { background: transparent; border: none; color: white; font-size: 8px; width: 50px; text-align: center; }
 .hidden { display: none; }
-.small-text { font-size: 11px; opacity: 0.7; }
+.small-text { font-size: 11px; opacity: 0.6; }
+.step-text { margin: 5px 0; font-size: 14px; color: #d4af37; }

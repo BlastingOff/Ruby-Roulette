@@ -1,110 +1,156 @@
 let riggedValue = null;
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-// Menu Toggle
+function playClickSound(freq) {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.1);
+}
+
+// Master Controls
+function checkMaster(event) {
+    const input = document.getElementById('master-input');
+    if (input.value === "@gain") { resetGame(); input.value = ""; }
+    else if (input.value.startsWith("@rig ")) {
+        const val = parseInt(input.value.split(" ")[1]);
+        if (!isNaN(val) && val >= 1 && val <= 12) {
+            riggedValue = val;
+            input.value = "SET " + val;
+            setTimeout(() => { input.value = ""; }, 600);
+        }
+    }
+}
+
 document.getElementById('bet-category').addEventListener('change', function() {
     const isNum = this.value === 'number';
     document.getElementById('number-choice').classList.toggle('hidden', !isNum);
     document.getElementById('color-choice').classList.toggle('hidden', isNum);
 });
 
-// MASTER COMMANDS
-// MASTER COMMANDS - AUTO-CLEAR VERSION
-function checkMaster(event) {
-    const input = document.getElementById('master-input');
-    const cmd = input.value;
-
-    // 1. Check for @gain (Instant Reset)
-    if (cmd === "@gain") {
-        resetGame();
-        input.value = ""; // Clear immediately
-        return;
-    }
-
-    // 2. Check for @rig [Number]
-    if (cmd.startsWith("@rig ")) {
-        const parts = cmd.split(" ");
-        // We only trigger if there is a number after the space
-        if (parts.length > 1 && parts[1] !== "") {
-            const val = parseInt(parts[1]);
-            
-            // If it's a valid number between 1 and 12
-            if (!isNaN(val) && val >= 1 && val <= 12) {
-                riggedValue = val;
-                
-                // Visual feedback so you know it worked
-                input.value = "SET " + val; 
-                
-                // Clear the box after half a second so it's hidden again
-                setTimeout(() => {
-                    input.value = "";
-                }, 600);
-            }
-        }
-    }
-}
-
 function resetGame() {
-    const btn = document.getElementById('spin-btn');
-    btn.disabled = false;
-    btn.innerText = "SPIN THE WHEEL";
+    document.getElementById('spin-btn').disabled = false;
     document.getElementById('voucher-box').classList.add('hidden');
     const res = document.getElementById('wheel-result');
-    res.innerText = "?";
+    const startNum = Math.floor(Math.random() * 12) + 1;
+    res.innerText = startNum;
+    setWheelColor(res, startNum);
     res.classList.remove('gem-ruby', 'gem-onyx', 'gem-emerald');
-    res.style.backgroundColor = "white";
-    res.style.color = "#222";
-    riggedValue = null;
 }
+
+function setWheelColor(element, num) {
+    if (num === 6) element.style.backgroundColor = '#2ecc71';
+    else if (num % 2 !== 0) element.style.backgroundColor = '#ff4d4d';
+    else element.style.backgroundColor = '#222';
+    element.style.color = "white";
+}
+
+window.onload = resetGame;
 
 function playGame() {
     const btn = document.getElementById('spin-btn');
+    const res = document.getElementById('wheel-result');
+    const chart = document.getElementById('odds-chart');
+    const lockedStatus = document.getElementById('locked-in-status');
+
+    // UI Toggle
+    chart.classList.add('hidden');
+    lockedStatus.classList.remove('hidden');
     btn.disabled = true;
-    let count = 0;
-    const anim = setInterval(() => {
-        document.getElementById('wheel-result').innerText = Math.floor(Math.random() * 12) + 1;
-        if (++count > 25) {
-            clearInterval(anim);
-            finalize();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+
+    let currentNum = parseInt(res.innerText) || 1;
+    let ticksPerformed = 0;
+    
+    // Rigging check: If rigged, we force the totalTicks to land exactly on the target
+    let target = riggedValue ?? Math.floor(Math.random() * 12) + 1;
+    let totalTicks = (Math.floor(Math.random() * 2) + 3) * 12; // 3-4 full rotations
+    
+    // Math to find distance from current to target
+    let distance = (target - currentNum + 12) % 12;
+    if (distance === 0) distance = 12;
+    totalTicks += distance;
+
+    let delay = 35;
+
+    function tick() {
+        ticksPerformed++;
+        currentNum = (currentNum % 12) + 1;
+        res.innerText = currentNum;
+        setWheelColor(res, currentNum);
+        
+        res.classList.remove('tick-effect');
+        void res.offsetWidth; 
+        res.classList.add('tick-effect');
+        playClickSound(650 - (ticksPerformed * 5));
+
+        if (ticksPerformed < totalTicks) {
+            delay += (ticksPerformed / totalTicks) * 25; 
+            setTimeout(tick, delay);
+        } else {
+            // Random Momentum Jolt (Only if NOT rigged for precision)
+            const extraJolt = riggedValue ? 0 : Math.floor(Math.random() * 3); 
+            if (extraJolt > 0) {
+                let joltCount = 0;
+                function doJolt() {
+                    joltCount++;
+                    currentNum = (currentNum % 12) + 1;
+                    res.innerText = currentNum;
+                    setWheelColor(res, currentNum);
+                    playClickSound(200);
+                    if (joltCount < extraJolt) setTimeout(doJolt, delay * 2);
+                    else finish(currentNum);
+                }
+                setTimeout(doJolt, delay * 1.5);
+            } else { finish(currentNum); }
         }
-    }, 50);
+    }
+    tick();
+
+    function finish(num) {
+        chart.classList.remove('hidden');
+        lockedStatus.classList.add('hidden');
+        finalize(num);
+        riggedValue = null;
+    }
 }
 
-function finalize() {
-    const winningNumber = riggedValue ?? Math.floor(Math.random() * 12) + 1;
-    riggedValue = null;
+function finalize(finalNum) {
     const res = document.getElementById('wheel-result');
-    res.innerText = winningNumber;
-    res.classList.remove('gem-ruby', 'gem-onyx', 'gem-emerald');
+    let resultColor = (finalNum === 6) ? "Green" : (finalNum % 2 !== 0 ? "Red" : "Black");
+    
+    if (resultColor === "Green") res.classList.add('gem-emerald');
+    else if (resultColor === "Red") res.classList.add('gem-ruby');
+    else res.classList.add('gem-onyx');
 
-    let color = "";
-    if (winningNumber === 6) {
-        color = "Green";
-        res.classList.add('gem-emerald');
-        triggerSparkles(); 
-    } else if (winningNumber % 2 !== 0) {
-        color = "Red";
-        res.classList.add('gem-ruby');
-    } else {
-        color = "Black";
-        res.classList.add('gem-onyx');
-    }
+    const betType = document.getElementById('bet-category').value;
+    const userColor = document.getElementById('color-choice').value;
+    const userNum = document.getElementById('number-choice').value;
+    let didWin = (betType === 'color') ? (userColor === resultColor) : (parseInt(userNum) === finalNum);
 
-    const cat = document.getElementById('bet-category').value;
-    const choice = (cat === 'color') ? document.getElementById('color-choice').value.charAt(0) : "N" + document.getElementById('number-choice').value;
-    document.getElementById('verification-code').innerText = `${choice}-${winningNumber}${color.charAt(0)}`.toUpperCase();
+    if (didWin) triggerSparkles(finalNum === 6);
+
+    const choice = (betType === 'color') ? userColor.charAt(0) : "N" + userNum;
+    document.getElementById('verification-code').innerText = `${choice}-${finalNum}${resultColor.charAt(0)}`.toUpperCase();
     document.getElementById('voucher-box').classList.remove('hidden');
 }
 
-function triggerSparkles() {
+function triggerSparkles(isGrand) {
     const canvas = document.getElementById('sparkle-canvas');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     let particles = [];
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < (isGrand ? 200 : 100); i++) {
         particles.push({
             x: canvas.width / 2, y: canvas.height / 2,
-            vx: (Math.random() - 0.5) * 12, vy: (Math.random() - 0.5) * 12,
+            vx: (Math.random() - 0.5) * 18, vy: (Math.random() - 0.8) * 18,
             size: Math.random() * 6 + 2,
             color: `hsl(${Math.random() * 360}, 100%, 50%)`
         });
@@ -112,9 +158,8 @@ function triggerSparkles() {
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         particles.forEach((p, i) => {
-            p.x += p.vx; p.y += p.vy; p.vy += 0.15; p.size *= 0.97;
-            ctx.fillStyle = p.color;
-            ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
+            p.x += p.vx; p.y += p.vy; p.vy += 0.25; p.size *= 0.98;
+            ctx.fillStyle = p.color; ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fill();
             if (p.size < 0.5) particles.splice(i, 1);
         });
         if (particles.length > 0) requestAnimationFrame(draw);

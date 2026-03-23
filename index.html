@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ruby Roulette - Carnival Game</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -11,17 +11,16 @@
 
     <div class="booth-container">
         <h1 class="ruby-title">Ruby Roulette</h1>
-        
         <div id="wheel-result">?</div>
         
         <div class="ui-section">
-            <p><strong>Step 1: Choose Bet Type</strong></p>
+            <p class="step-text">Step 1: Choose Bet Type</p>
             <select id="bet-category">
                 <option value="color">Bet on Color</option>
                 <option value="number">Bet on Number</option>
             </select>
 
-            <p><strong>Step 2: Pick Your Target</strong></p>
+            <p class="step-text">Step 2: Pick Your Target</p>
             <select id="color-choice">
                 <option value="Red">Ruby Red (Odds)</option>
                 <option value="Black">Onyx Black (Evens)</option>
@@ -36,6 +35,32 @@
                 <option value="9">9</option><option value="10">10</option>
                 <option value="11">11</option><option value="12">12</option>
             </select>
+            
+            <div id="odds-chart" class="odds-legend">
+                <table>
+                    <tr>
+                        <th class="legend-target">TARGET</th>
+                        <th class="legend-odds">P(Win)</th>
+                    </tr>
+                    <tr class="ruby-row">
+                        <td>Ruby Red (Odds)</td>
+                        <td>6 / 12 (50%)</td>
+                    </tr>
+                    <tr class="onyx-row">
+                        <td>Onyx Black (Evens)</td>
+                        <td>5 / 12 (42%)</td>
+                    </tr>
+                    <tr class="emerald-row">
+                        <td>Emerald Green (6)</td>
+                        <td>1 / 12 (8%)</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div id="locked-in-status" class="hidden">
+                <h2 class="locked-text">LOCKED IN</h2>
+                <p class="small-text">Calculating Momentum...</p>
+            </div>
 
             <button id="spin-btn" onclick="playGame()">SPIN THE WHEEL</button>
         </div>
@@ -43,7 +68,7 @@
         <div id="voucher-box" class="hidden">
             <hr>
             <div id="verification-code">----</div>
-            <p class="small-text">Wheel Spun. See Game Master.</p>
+            <p class="small-text">Spin Verified. See Game Master.</p>
         </div>
 
         <div class="master-box">
