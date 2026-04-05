@@ -20,7 +20,7 @@ function checkMaster(event) {
     if (input.value === "@gain") { resetGame(); input.value = ""; }
     else if (input.value.startsWith("@rig ")) {
         const val = parseInt(input.value.split(" ")[1]);
-        if (!isNaN(val) && val >= 1 && val <= 12) {
+        if (!isNaN(val) && val >= 1 && val <= 30) {
             riggedValue = val;
             input.value = "SET " + val;
             setTimeout(() => { input.value = ""; }, 600);
@@ -38,16 +38,23 @@ function resetGame() {
     document.getElementById('spin-btn').disabled = false;
     document.getElementById('voucher-box').classList.add('hidden');
     const res = document.getElementById('wheel-result');
-    const startNum = Math.floor(Math.random() * 12) + 1;
+    const startNum = Math.floor(Math.random() * 30) + 1;
     res.innerText = startNum;
     setWheelColor(res, startNum);
     res.classList.remove('gem-ruby', 'gem-onyx', 'gem-emerald');
 }
 
 function setWheelColor(element, num) {
-    if (num === 6) element.style.backgroundColor = '#2ecc71';
-    else if (num % 2 !== 0) element.style.backgroundColor = '#ff4d4d';
-    else element.style.backgroundColor = '#222';
+    // UPDATED: 1 and 15 are now Green
+    if (num === 1 || num === 15) {
+        element.style.backgroundColor = '#2ecc71';
+    } 
+    else if (num % 2 !== 0) {
+        element.style.backgroundColor = '#ff4d4d';
+    } 
+    else {
+        element.style.backgroundColor = '#222';
+    }
     element.style.color = "white";
 }
 
@@ -59,7 +66,6 @@ function playGame() {
     const chart = document.getElementById('odds-chart');
     const lockedStatus = document.getElementById('locked-in-status');
 
-    // UI Toggle
     chart.classList.add('hidden');
     lockedStatus.classList.remove('hidden');
     btn.disabled = true;
@@ -68,39 +74,36 @@ function playGame() {
     let currentNum = parseInt(res.innerText) || 1;
     let ticksPerformed = 0;
     
-    // Rigging check: If rigged, we force the totalTicks to land exactly on the target
-    let target = riggedValue ?? Math.floor(Math.random() * 12) + 1;
-    let totalTicks = (Math.floor(Math.random() * 2) + 3) * 12; // 3-4 full rotations
+    let target = riggedValue ?? Math.floor(Math.random() * 30) + 1;
+    let totalTicks = (Math.floor(Math.random() * 2) + 3) * 30; 
     
-    // Math to find distance from current to target
-    let distance = (target - currentNum + 12) % 12;
-    if (distance === 0) distance = 12;
+    let distance = (target - currentNum + 30) % 30;
+    if (distance === 0) distance = 30;
     totalTicks += distance;
 
     let delay = 35;
 
     function tick() {
         ticksPerformed++;
-        currentNum = (currentNum % 12) + 1;
+        currentNum = (currentNum % 30) + 1;
         res.innerText = currentNum;
         setWheelColor(res, currentNum);
         
         res.classList.remove('tick-effect');
         void res.offsetWidth; 
         res.classList.add('tick-effect');
-        playClickSound(650 - (ticksPerformed * 5));
+        playClickSound(650 - (ticksPerformed * 2));
 
         if (ticksPerformed < totalTicks) {
-            delay += (ticksPerformed / totalTicks) * 25; 
+            delay += (ticksPerformed / totalTicks) * 20; 
             setTimeout(tick, delay);
         } else {
-            // Random Momentum Jolt (Only if NOT rigged for precision)
             const extraJolt = riggedValue ? 0 : Math.floor(Math.random() * 3); 
             if (extraJolt > 0) {
                 let joltCount = 0;
                 function doJolt() {
                     joltCount++;
-                    currentNum = (currentNum % 12) + 1;
+                    currentNum = (currentNum % 30) + 1;
                     res.innerText = currentNum;
                     setWheelColor(res, currentNum);
                     playClickSound(200);
@@ -123,7 +126,9 @@ function playGame() {
 
 function finalize(finalNum) {
     const res = document.getElementById('wheel-result');
-    let resultColor = (finalNum === 6) ? "Green" : (finalNum % 2 !== 0 ? "Red" : "Black");
+    // UPDATED: Logic to identify Green for 1 and 15
+    const isGreen = (finalNum === 1 || finalNum === 15);
+    let resultColor = isGreen ? "Green" : (finalNum % 2 !== 0 ? "Red" : "Black");
     
     if (resultColor === "Green") res.classList.add('gem-emerald');
     else if (resultColor === "Red") res.classList.add('gem-ruby');
@@ -134,7 +139,8 @@ function finalize(finalNum) {
     const userNum = document.getElementById('number-choice').value;
     let didWin = (betType === 'color') ? (userColor === resultColor) : (parseInt(userNum) === finalNum);
 
-    if (didWin) triggerSparkles(finalNum === 6);
+    // UPDATED: Grand sparkles for any green win
+    if (didWin) triggerSparkles(isGreen);
 
     const choice = (betType === 'color') ? userColor.charAt(0) : "N" + userNum;
     document.getElementById('verification-code').innerText = `${choice}-${finalNum}${resultColor.charAt(0)}`.toUpperCase();
