@@ -75,13 +75,13 @@ function playGame() {
     let ticksPerformed = 0;
     
     let target = riggedValue ?? Math.floor(Math.random() * 30) + 1;
-    let totalTicks = (Math.floor(Math.random() * 2) + 3) * 30; 
+    let totalTicks = (Math.floor(Math.random() * 1) + 2) * 30; 
     
     let distance = (target - currentNum + 30) % 30;
     if (distance === 0) distance = 30;
     totalTicks += distance;
 
-    let delay = 35;
+    let delay = 20;
 
     function tick() {
         ticksPerformed++;
